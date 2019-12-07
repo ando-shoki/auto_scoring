@@ -15,9 +15,11 @@
 
     <div class="main">    
         <h2> 送信された画像の数字を識別します</h2>
-        <p>画像を送信してください</p>
         <form method="POST" enctype="multipart/form-data">
-            <input class="file_choose" type="file" name="file">
+            <p>未記入の解答欄画像を送信してください</p>
+            <input class="file_choose" type="file" name="qr_file">
+            <p>記入済み解答欄画像を送信してください</p>
+            <input class="file_choose" type="file" name="ans_file">
             <input class="btn" value="submit!" type="submit">
         </form>
         <div class="answer">{{answer}}</div>
