@@ -12,10 +12,12 @@ classes = ["0","1","2","3","4","5","6","7","8","9"]
 num_classes = len(classes)
 image_size = 28
 
-UPLOAD_FOLDER = "uploads"
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-
 app = Flask(__name__)
+
+UPLOAD_FOLDER = "./uploads"
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SECRET_KEY'] = os.urandom(24)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -23,20 +25,17 @@ def allowed_file(filename):
 #model = load_model('auto_scoring/model.h5')#学習済みモデルをロードする
 model = tf.keras.models.load_model('model.h5')#学習済みモデルをロードする
 
-
 @app.route('/',methods = ['GET','POST'])
 def upload_file():
     #bugが出たらkerasがやばいかも
     #global graph
     #with graph.as_default():
-    print("hoge")
     if request.method == 'POST':
-        print('POSTNOW')
         '''
         @qr_file : 解答欄の元のQR画像ファイル
         @ans_file: 生徒が記入済みのQR画像ファイル
         '''
-        if 'qr_file'or'ans_file' not in request.files:
+        if ('qr_file' not in request.files) or ('ans_file' not in request.files):
             flash('ファイルがありません')#flashはユーザーに挙動が正しいかを知らせる
             return redirect(request.url)
         qr_file = request.files['qr_file']
@@ -45,12 +44,9 @@ def upload_file():
             flash('ファイルがありません')
             return redirect(request.url)
         if qr_file and allowed_file(qr_file.filename):
-            if ans_file and allowd_file(ans_file.filename):
-                print('qr and ans OK')
+            if ans_file and allowed_file(ans_file.filename):
                 qr_filename = secure_filename(qr_file.filename)
                 ans_filename = secure_filename(ans_file.filename)
-                return(qr_filename)
-                print(ans_filename)
                 #なぜかpathが存在しないって怒られた
                 #file.save(filename)
                 #filepath = filename
@@ -71,16 +67,12 @@ def upload_file():
                 predicted = result.argmax()
                 pred_ans ='この画像は' + classes[predicted]+ 'です'
 
-            return render_template('index.html', answer = pred_ans)
+            return render_template('result.html', answer = pred_ans)
         else:
             return render_template('index.html', answer = '')
     return render_template('index.html', answer = '')
     
 #直接実行した時のみに動く
 if __name__ == '__main__':
-    # qr_num = make_read_qr.read_qr(1)
-    # print(qr_num.values.astype('i') == 1)
-    # app.debug = True
-    app.secret_key = 'super secret key'
-    app.run(port=8000, debug=False)
+    app.run(port=8000, debug=True)
         
