@@ -6,7 +6,6 @@ from keras.preprocessing import image
 #from tensorflow.keras.initializers import GlorotUniform
 import tensorflow as tf
 import numpy as np
-import make_read_qr
 
 classes = ["0","1","2","3","4","5","6","7","8","9"]
 num_classes = len(classes)
