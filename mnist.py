@@ -61,7 +61,11 @@ def upload_file():
                 ans_img = image.img_to_array(ans_img)
                 qr_data = np.array([qr_img])
                 ans_data = np.array([ans_img])
-                data = 255 - (ans_data - qr_data)
+                data = abs(ans_data - qr_data)
+                for i in range(len(data[0])):
+                    for j in range(len(data[0])):
+                        if data[0][i][j] > 5:
+                            data[0][i][j] = 255
                 result = model.predict(data)[0]
                 predicted = result.argmax()
                 pred_ans ='この画像は' + classes[predicted]+ 'です'
