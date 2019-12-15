@@ -1,8 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
 <!DOCTYPE html>
 <title>QR ANSWER App</title>
-{% if answer %}
-  <h1>{{answer}}</h1>
-  <a href="./">トップへ戻る</a>
+{% if res_list.any() %}
+  <table class="table">
+    <tr>
+      <th>問題番号</th>
+      <th>答案</th>
+      <th>正答</th>
+    </tr>
+    {% for result in res_list %}
+    <tr>
+      <td>{{result[0]}}</td>
+      <td>{{result[1]}}</td>
+      <td>{{result[2]}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <a href="./">トップへ</a>
 {% else %}
-  <a href="./">トップへ戻る</a>
+  <a href="./">戻る</a>
 {% endif %}
+
+{% endblock %}
