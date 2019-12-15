@@ -3,6 +3,9 @@
 <!DOCTYPE html>
 <title>QR ANSWER App</title>
 {% if res_list.any() %}
+  {% if ans_correct %}
+    <h2>正答数: {{ans_correct}} / 20</h2>
+  {% endif %}
   <table class="table">
     <tr>
       <th>問題番号</th>
