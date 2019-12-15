@@ -63,8 +63,16 @@ def upload_file():
             gamma_table = [np.power(x/255.0,gamma)*255.0 for x in range(256)]
             gamma_table = np.round(np.array(gamma_table)).astype(np.uint8)
             gray_imgcv = cv2.LUT(gray_imgcv,gamma_table)
-            blurred_img = cv2.GaussianBlur(gray_imgcv, (11,11),0)
-            barcodes = pyzbar.decode(blurred_img)
+            blurred_img = cv2.GaussianBlur(gray_imgcv, (5,5),0)
+            barcodes_1 = pyzbar.decode(blurred_img)
+            barcodes_2 = pyzbar.decode(gray_imgcv)
+
+            #なるべくすべでのQRコードを読み取る
+            if len(barcodes_1) >= len(barcodes_2):
+                barcodes = barcodes_1
+            else:
+                barcodes = barcodes_2
+            
             
     
             #the picture's number
@@ -145,8 +153,3 @@ def upload_file():
 #直接実行した時のみに動く
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
-
-
-
-
-    
