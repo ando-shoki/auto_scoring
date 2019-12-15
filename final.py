@@ -27,7 +27,7 @@ image_size = 28
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-answer = ["0","1","2","3","4","5","6","7","8","9"]
+answer = ["1","2","3","4","5","6","7","8","9","0","1","2","3","4","5","6","7","8","9","0"]
 
 @app.route('/',methods = ['GET','POST'])
 def upload_file():
@@ -56,7 +56,7 @@ def upload_file():
             gray_img = cv2.cvtColor(qr_img, cv2.COLOR_BGR2GRAY)
 
             #when the img is too dark, do this
-            gamma =2
+            gamma =1.2
             gamma_table = [np.power(x/255.0,gamma)*255.0 for x in range(256)]
             gamma_table = np.round(np.array(gamma_table)).astype(np.uint8)
             gray_img = cv2.LUT(gray_img,gamma_table)    
