@@ -54,6 +54,14 @@ def upload_file():
             
             qr_img = image.load_img(img_filepath ,grayscale=True,target_size=(image_size,image_size))
             gray_img = cv2.cvtColor(qr_img, cv2.COLOR_BGR2GRAY)
+
+            #when the img is too dark, do this
+            gamma =2
+            gamma_table = [np.power(x/255.0,gamma)*255.0 for x in range(256)]
+            gamma_table = np.round(np.array(gamma_table)).astype(np.uint8)
+            gray_img = cv2.LUT(gray_img,gamma_table)    
+    
+
             blurred_img = cv2.GaussianBlur(gray_img, (11,11),0)
             barcodes = pyzbar.decode(blurred_img)
             
@@ -62,6 +70,7 @@ def upload_file():
             i=1
 
             ans_correct  = 0
+            ans_false = []
 
             for  barcode in barcodes:
                 (x, y, w, h) = barcode.rect
@@ -82,7 +91,14 @@ def upload_file():
                 cnt = contours[0]
                 X, Y, W, H = cv2.boundingRect(cnt) 
                 rectangle = binary2black[Y:Y+H,X:X+W]
-                Padding = cv2.copyMakeBorder(rectangle,50,50,80,80,cv2.BORDER_CONSTANT,value=[0,0,0])
+                rec_shape = rectangle.shape[0]/rectangle.shape[1]
+                if 0 <= rec_shape <= 1.3 :
+                    Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*0.6),round(W*0.6),cv2.BORDER_CONSTANT,value=[0,0,0])
+                elif rec_shape <= 4:
+                    Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*0.8),round(W*0.8),cv2.BORDER_CONSTANT,value=[0,0,0])
+                else :
+                    Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*5),round(W*5),cv2.BORDER_CONSTANT,value=[0,0,0])
+                #Padding = cv2.copyMakeBorder(rectangle,50,50,80,80,cv2.BORDER_CONSTANT,value=[0,0,0])
                 #cv2.imwrite('Padding_{}.jpg'.format(i),Padding)
 
                 #Resize and sharpen image
@@ -105,9 +121,12 @@ def upload_file():
                     ans_correct += 1
                 else:
                     print('The answer is incorrect')
+                    ans_false.append(qr_que+1)
 
         
-        x1 = (ans_correct / 10.0) * 100
+        x1 = (ans_correct / 20.0) * 100
+        ans_false.sort()
+        print('Predict false: {}'.format(ans_false))
         print('If the prediction is 100% correct. The correct rate of answer is {} %'.format(x1))
                         
     #img_read = cv2.imread('test2.jpg')
