@@ -28,6 +28,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 answer = ["1","2","3","4","5","6","7","8","9","0","1","2","3","4","5","6","7","8","9","0"]
+output = {}
 
 @app.route('/',methods = ['GET','POST'])
 def upload_file():
@@ -56,7 +57,7 @@ def upload_file():
             gray_img = cv2.cvtColor(qr_img, cv2.COLOR_BGR2GRAY)
 
             #when the img is too dark, do this
-            gamma =1.2
+            gamma =1.3
             gamma_table = [np.power(x/255.0,gamma)*255.0 for x in range(256)]
             gamma_table = np.round(np.array(gamma_table)).astype(np.uint8)
             gray_img = cv2.LUT(gray_img,gamma_table)    
@@ -110,7 +111,7 @@ def upload_file():
 
                 #Predict and show the result
                 pred = model.predict(resized.reshape(1, 28, 28)).argmax()            
-                print("No.{0} question's answer is {1}".format(barcodeData,pred))
+                #print("No.{0} question's answer is {1}".format(barcodeData,pred))
 
                 qr_que = int(barcodeData)
                 qr_ans = int(pred)
@@ -126,6 +127,10 @@ def upload_file():
         
         x1 = (ans_correct / 20.0) * 100
         ans_false.sort()
+        num_output = sorted(output.items(),key=lambda x:x[0])
+        for i in range(len(num_output)):
+            print("No.{0} question's answer is {1}".format(i+1,num_output[i][1]))
+    
         print('Predict false: {}'.format(ans_false))
         print('If the prediction is 100% correct. The correct rate of answer is {} %'.format(x1))
                         
