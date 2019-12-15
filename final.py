@@ -58,7 +58,12 @@ def upload_file():
             qr_imgcv = cv2.imread(img_filepath)
             # gray_img = cv2.cvtColor(qr_img, cv2.COLOR_BGR2GRAY)
             gray_imgcv = cv2.cvtColor(qr_imgcv, cv2.COLOR_BGR2GRAY)
-            blurred_img = cv2.GaussianBlur(gray_imgcv, (11,11),0)
+
+            gamma =1.4
+            gamma_table = [np.power(x/255.0,gamma)*255.0 for x in range(256)]
+            gamma_table = np.round(np.array(gamma_table)).astype(np.uint8)
+            gray_img = cv2.LUT(gray_imgcv,gamma_table)
+            blurred_img = cv2.GaussianBlur(gray_img, (11,11),0)
             barcodes = pyzbar.decode(blurred_img)
             
     
@@ -66,13 +71,14 @@ def upload_file():
             i=1
 
             ans_correct  = 0
+            ans_false = []
             qr_list = np.empty((1,3))
             for  barcode in barcodes:
                 (x, y, w, h) = barcode.rect
                 #以下imwriteは確認
                 #binary image 
                 barcodeData = barcode.data.decode("utf-8")
-                crop_cut = gray_imgcv[y:y+h ,x+310 :x+w+310]
+                crop_cut = gray_img[y:y+h ,x+310 :x+w+310]
                 th, binary = cv2.threshold(crop_cut,125, 255, cv2.THRESH_BINARY)
                 #cv2.imwrite('crop_cut_binary_{}.jpg'.format(i),binary)
 
@@ -88,32 +94,44 @@ def upload_file():
                 rectangle = binary2black[Y:Y+H,X:X+W]
                 Padding = cv2.copyMakeBorder(rectangle,50,50,80,80,cv2.BORDER_CONSTANT,value=[0,0,0])
                 #cv2.imwrite('Padding_{}.jpg'.format(i),Padding)
+                rec_shape = rectangle.shape[0]/rectangle.shape[1]
+                if 0 <= rec_shape <= 1.3 :
+                    Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*0.6),round(W*0.6),cv2.BORDER_CONSTANT,value=[0,0,0])
+                elif rec_shape <= 4:
+                    Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*0.8),round(W*0.8),cv2.BORDER_CONSTANT,value=[0,0,0])
+                else :
+                    Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*5),round(W*5),cv2.BORDER_CONSTANT,value=[0,0,0])
 
                 #Resize and sharpen image
-                resized = cv2.resize(Padding,(28,28),interpolation=cv2.INTER_AREA)     
+                resized = cv2.resize(Padding,(28,28),interpolation=cv2.INTER_AREA)
                 #cv2.imwrite('resized_{}.jpg'.format(i), resized)
+                resized = np.array(resized.reshape(1,28,28), dtype = 'float64')
 
                 #increase the picture's number
                 i += 1
 
                 #Predict and show the result
-                pred = model.predict(resized.reshape(1, 28, 28)).argmax()            
+                pred = model.predict(resized).argmax()  
                 print("No.{0} question's answer is {1}".format(barcodeData,pred))
 
                 qr_que = int(barcodeData)
-                qr_ans = int(pred)
-                true_ans = int(answer[qr_que])
+                qr_ans = float(pred)
+                true_ans = float(answer[qr_que])
                     
                 if qr_ans == true_ans:
                     print('The answer is correct')
                     ans_correct += 1
                 else:
                     print('The answer is incorrect')
-                qr_list = np.append(qr_list, [[qr_que, qr_ans, true_ans]], axis=0)
+                    ans_false.append(qr_que+1)
+
+                qr_list = np.append(qr_list, [[qr_que+1, qr_ans, true_ans]], axis=0)
         
         qr_list = np.delete(qr_list, 0, 0)
         qr_list = qr_list[qr_list[:,0].argsort(), :]
-        x1 = (ans_correct / 10.0) * 100
+        x1 = (ans_correct / 20.0) * 100
+        ans_false.sort()
+        print('Predict false: {}'.format(ans_false))
         print('If the prediction is 100% correct. The correct rate of answer is {} %'.format(x1))
         return render_template('result.html', res_list=qr_list)                
     #img_read = cv2.imread('test2.jpg')
@@ -136,3 +154,4 @@ def make_test():
 #直接実行した時のみに動く
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
+
