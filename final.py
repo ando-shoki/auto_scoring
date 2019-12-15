@@ -16,6 +16,7 @@ from keras_preprocessing import image
 
 #model = load_model('auto_scoring/model.h5')#学習済みモデルをロードする
 model = tf.keras.models.load_model('model.h5')#学習済みモデルをロードする
+model._make_predict_function()
 
 app = Flask(__name__)
 
@@ -29,7 +30,7 @@ image_size = 28
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-answer = ["0","1","2","3","4","5","6","7","8","9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"]
+answer = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 
 @app.route('/',methods = ['GET','POST'])
 def upload_file():
@@ -49,7 +50,7 @@ def upload_file():
             flash('ファイルがありません')
             return redirect(request.url)
         if img_file and allowed_file(img_file.filename):
-            
+
             img_filename = secure_filename(img_file.filename)
             img_file.save(os.path.join(UPLOAD_FOLDER,img_filename))
             img_filepath = os.path.join(UPLOAD_FOLDER, img_filename)
@@ -133,7 +134,7 @@ def upload_file():
         ans_false.sort()
         print('Predict false: {}'.format(ans_false))
         print('If the prediction is 100% correct. The correct rate of answer is {} %'.format(x1))
-        return render_template('result.html', res_list=qr_list)                
+        return render_template('result.html', res_list=qr_list, ans_correct=ans_correct)
     #img_read = cv2.imread('test2.jpg')
     #read_pred(img_read)
     return render_template('index.html')
