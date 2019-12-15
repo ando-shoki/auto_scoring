@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block body %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>auto scoring</title>
+    <style>
+      html, body {
+      min-height: 100%;
+      }
+      body, div, form, input, select, textarea, label, p { 
+      padding: 0;
+      margin: 0;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px;
+      color: #666;
+      line-height: 22px;
+      }
+      h1 {
+      position: absolute;
+      margin: 0;
+      font-size: 40px;
+      color: #fff;
+      z-index: 2;
+      line-height: 83px;
+      }
+      textarea {
+      width: calc(100% - 12px);
+      padding: 5px;
+      }
+      .testbox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: inherit;
+      padding: 20px;
+      }
+      form {
+      width: 100%;
+      padding: 20px;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 0 8px  #669999; 
+      }
+      .banner {
+      position: relative;
+      height: 50px;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      }
+      .banner::after {
+      content: "";
+      background-color: rgba(0, 0, 120, 0.7); 
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      }
+      input, select, textarea {
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      }
+      input {
+      width: calc(100% - 10px);
+      padding: 5px;
+      }
+      input[type="date"] {
+      padding: 4px 5px;
+      }
+      textarea {
+      width: calc(100% - 12px);
+      padding: 5px;
+      }
+      .item:hover p, .item:hover i, .question:hover p, .question label:hover, input:hover::placeholder {
+      color:  #669999;
+      }
+      .item input:hover, .item select:hover, .item textarea:hover {
+      border: 1px solid transparent;
+      box-shadow: 0 0 3px 0  #669999;
+      color: #669999;
+      }
+      .item {
+      position: relative;
+      margin: 10px 0;
+      }
+      .item span {
+      color: red;
+      }
+      .week {
+      display:flex;
+      justfiy-content:space-between;
+      }
+      .colums {
+      display:flex;
+      justify-content:space-between;
+      flex-direction:row;
+      flex-wrap:wrap;
+      }
+      .colums div {
+      width:48%;
+      }
+      input[type="date"]::-webkit-inner-spin-button {
+      display: none;
+      }
+      .item i, input[type="date"]::-webkit-calendar-picker-indicator {
+      position: absolute;
+      font-size: 20px;
+      color:  #a3c2c2;
+      }
+      .item i {
+      right: 1%;
+      top: 30px;
+      z-index: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="testbox">
+      <form method="POST" enctype="multipart/form-data">
+        <div class="banner">
+          <h1>問題の解答を入力してください</h1>
+        </div>
+        <div class="colums">
+          <div class="item">
+            <label for="fname"> 問題1 <span>*</span></label>
+            <input id="fname" type="text" name="form[1]" required/>
+            <label for="fname"> 問題2 <span>*</span></label>
+            <input id="fname" type="text" name="form[2]" required/>
+            <label for="fname"> 問題3 <span>*</span></label>
+            <input id="fname" type="text" name="form[3]" required/>
+            <label for="fname"> 問題4 <span>*</span></label>
+            <input id="fname" type="text" name="form[4]" required/>
+            <label for="fname"> 問題5 <span>*</span></label>
+            <input id="fname" type="text" name="form[5]" required/>
+            <label for="fname"> 問題6 <span>*</span></label>
+            <input id="fname" type="text" name="form[6]" required/>
+            <label for="fname"> 問題7 <span>*</span></label>
+            <input id="fname" type="text" name="form[7]" required/>
+            <label for="fname"> 問題8 <span>*</span></label>
+            <input id="fname" type="text" name="form[8]" required/>
+            <label for="fname"> 問題9 <span>*</span></label>
+            <input id="fname" type="text" name="form[9]" required/>
+            <label for="fname"> 問題10 <span>*</span></label>
+            <input id="fname" type="text" name="form[10]" required/>
+            <label for="fname"> 問題11 <span>*</span></label>
+            <input id="fname" type="text" name="form[11]" required/>
+            <label for="fname"> 問題12 <span>*</span></label>
+            <input id="fname" type="text" name="form[12]" required/>
+            <label for="fname"> 問題13 <span>*</span></label>
+            <input id="fname" type="text" name="form[13]" required/>
+            <label for="fname"> 問題14 <span>*</span></label>
+            <input id="fname" type="text" name="form[14]" required/>
+            <label for="fname"> 問題15 <span>*</span></label>
+            <input id="fname" type="text" name="form[15]" required/>
+            <label for="fname"> 問題16 <span>*</span></label>
+            <input id="fname" type="text" name="form[16]" required/>
+            <label for="fname"> 問題17 <span>*</span></label>
+            <input id="fname" type="text" name="form[17]" required/>
+            <label for="fname"> 問題18 <span>*</span></label>
+            <input id="fname" type="text" name="form[18]" required/>
+            <label for="fname"> 問題19 <span>*</span></label>
+            <input id="fname" type="text" name="form[19]" required/>
+            <label for="fname"> 問題20 <span>*</span></label>
+            <input id="fname" type="text" name="form[20]" required/>
+          </div>
+        </div>
+        <label>
+          QRコードと解答欄が印字された答案用紙が作成されます。
+        </label>
+        <div class="btn-block">
+          <input class="btn" value="作成" type="submit" >
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
+
+{% endblock %}

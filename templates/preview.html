@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+<!DOCTYPE html>
+<title>auto scoring</title>
+{% if ans_list.any() %}
+  <h2>作成する試験</h2>
+  <table class="table">
+    <tr>
+      <th>問題番号</th>
+      <th>正答</th>
+    </tr>
+    {% for ans in ans_list %}
+    <tr>
+      <td>{{loop.index0 + 1}}</td>
+      <td>{{ans}}</td>
+
+    </tr>
+    {% endfor %}
+  </table>
+  <a href="./">トップへ</a>
+{% else %}
+  <a href="./">戻る</a>
+{% endif %}
+
+{% endblock %}

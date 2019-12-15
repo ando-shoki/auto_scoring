@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 from keras_preprocessing import image
 
 #model = load_model('auto_scoring/model.h5')#学習済みモデルをロードする
-model = tf.keras.models.load_model('model_mnist.h5')#学習済みモデルをロードする
+model = tf.keras.models.load_model('model.h5')#学習済みモデルをロードする
 
 app = Flask(__name__)
 
@@ -29,7 +29,7 @@ image_size = 28
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-answer = ["0","1","2","3","4","5","6","7","8","9"]
+answer = ["0","1","2","3","4","5","6","7","8","9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"]
 
 @app.route('/',methods = ['GET','POST'])
 def upload_file():
@@ -118,12 +118,21 @@ def upload_file():
         return render_template('result.html', res_list=qr_list)                
     #img_read = cv2.imread('test2.jpg')
     #read_pred(img_read)
-    return render_template('index.html', answer = '')
+    return render_template('index.html')
+
+@app.route('/input',methods = ['GET','POST'])
+def make_test():
+    ans_list = []
+    if request.method == 'POST':
+        for i in request.form:
+            ans_list = np.append(ans_list, request.form.get(i))
+        ans_list = ans_list.astype('i')
+        answer = ans_list
+        return render_template('preview.html', ans_list=answer)
+    elif request.method == 'GET':
+
+        return render_template('input_form.html')
 
 #直接実行した時のみに動く
 if __name__ == '__main__':
     app.run(port=8000, debug=True)
-
-
-
-
