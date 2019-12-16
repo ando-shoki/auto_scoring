@@ -1,22 +1,19 @@
 {% extends "base.html" %}
 {% block body %}
 <!DOCTYPE html>
-<title>QR ANSWER App</title>
-{% if res_list.any() %}
-  {% if ans_correct %}
-    <h2>正答数: {{ans_correct}} / 20</h2>
-  {% endif %}
+<title>auto scoring</title>
+{% if ans_list.any() %}
+  <h2>作成する試験</h2>
   <table class="table">
     <tr>
       <th>問題番号</th>
-      <th>答案</th>
       <th>正答</th>
     </tr>
-    {% for result in res_list %}
+    {% for ans in ans_list %}
     <tr>
-      <td>{{result[0]}}</td>
-      <td>{{result[1]}}</td>
-      <td>{{result[2]}}</td>
+      <td>{{loop.index0 + 1}}</td>
+      <td>{{ans}}</td>
+
     </tr>
     {% endfor %}
   </table>
