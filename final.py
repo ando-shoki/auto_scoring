@@ -7,7 +7,7 @@ import keras.preprocessing.image
 #from tensorflow.keras.initializers import GlorotUniform
 import tensorflow as tf
 import numpy as np
-from cv2 import cv2
+import cv2
 import matplotlib.pyplot as plt
 import pyzbar.pyzbar as pyzbar
 from pyzbar.pyzbar import decode
@@ -25,12 +25,16 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = os.urandom(24)
 
-image_size = 28
+#image_size = 300
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-answer = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+
+answer = ["1","2","3","4","5","6","7","8","9","0","1","2","3","4","5","6","7","8","9","0"]
+
+
+
 
 @app.route('/',methods = ['GET','POST'])
 def upload_file():
@@ -60,12 +64,20 @@ def upload_file():
             # gray_img = cv2.cvtColor(qr_img, cv2.COLOR_BGR2GRAY)
             gray_imgcv = cv2.cvtColor(qr_imgcv, cv2.COLOR_BGR2GRAY)
 
-            gamma =1.4
+            gamma =1.3
             gamma_table = [np.power(x/255.0,gamma)*255.0 for x in range(256)]
             gamma_table = np.round(np.array(gamma_table)).astype(np.uint8)
-            gray_img = cv2.LUT(gray_imgcv,gamma_table)
-            blurred_img = cv2.GaussianBlur(gray_img, (11,11),0)
-            barcodes = pyzbar.decode(blurred_img)
+            gray_imgcv = cv2.LUT(gray_imgcv,gamma_table)
+            blurred_img = cv2.GaussianBlur(gray_imgcv, (5,5),0)
+            barcodes_1 = pyzbar.decode(blurred_img)
+            barcodes_2 = pyzbar.decode(gray_imgcv)
+
+            #なるべくすべでのQRコードを読み取る
+            if len(barcodes_1) >= len(barcodes_2):
+                barcodes = barcodes_1
+            else:
+                barcodes = barcodes_2
+            
             
     
             #the picture's number
@@ -79,7 +91,11 @@ def upload_file():
                 #以下imwriteは確認
                 #binary image 
                 barcodeData = barcode.data.decode("utf-8")
-                crop_cut = gray_img[y:y+h ,x+310 :x+w+310]
+                crop_cut = gray_imgcv[y:y+h ,x+w+5 :x+2*w+5]
+
+                #If the font is too small, do this
+                kernel= cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+                crop_cut = cv2.erode(crop_cut, kernel)
                 th, binary = cv2.threshold(crop_cut,125, 255, cv2.THRESH_BINARY)
                 #cv2.imwrite('crop_cut_binary_{}.jpg'.format(i),binary)
 
@@ -89,16 +105,16 @@ def upload_file():
 
                 
                 _, thresh = cv2.threshold(binary, 125, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-                contours, hierarchy = cv2.findContours(thresh, 3, cv2.CHAIN_APPROX_NONE)
+                contours, hierarchy = cv2.findContours(thresh, 3, cv2.CHAIN_APPROX_SIMPLE)
                 cnt = contours[0]
                 X, Y, W, H = cv2.boundingRect(cnt) 
                 rectangle = binary2black[Y:Y+H,X:X+W]
-                Padding = cv2.copyMakeBorder(rectangle,50,50,80,80,cv2.BORDER_CONSTANT,value=[0,0,0])
+                
                 #cv2.imwrite('Padding_{}.jpg'.format(i),Padding)
                 rec_shape = rectangle.shape[0]/rectangle.shape[1]
-                if 0 <= rec_shape <= 1.3 :
+                if rec_shape <= 1.3 :
                     Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*0.6),round(W*0.6),cv2.BORDER_CONSTANT,value=[0,0,0])
-                elif rec_shape <= 4:
+                elif rec_shape <= 4.0:
                     Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*0.8),round(W*0.8),cv2.BORDER_CONSTANT,value=[0,0,0])
                 else :
                     Padding = cv2.copyMakeBorder(rectangle,round(H*0.33),round(H*0.26),round(W*5),round(W*5),cv2.BORDER_CONSTANT,value=[0,0,0])
@@ -106,18 +122,18 @@ def upload_file():
                 #Resize and sharpen image
                 resized = cv2.resize(Padding,(28,28),interpolation=cv2.INTER_AREA)
                 #cv2.imwrite('resized_{}.jpg'.format(i), resized)
-                resized = np.array(resized.reshape(1,28,28), dtype = 'float64')
+                #resized = np.array(resized.reshape(1,28,28), dtype = 'float64')
 
                 #increase the picture's number
                 i += 1
 
                 #Predict and show the result
-                pred = model.predict(resized).argmax()  
-                print("No.{0} question's answer is {1}".format(barcodeData,pred))
+                pred = model.predict(resized.reshape(1,28,28)).argmax()  
+                print("No.{0} question's answer is {1}".format(int(barcodeData)+1,pred))
 
                 qr_que = int(barcodeData)
-                qr_ans = float(pred)
-                true_ans = float(answer[qr_que])
+                qr_ans = int(pred)
+                true_ans = int(answer[qr_que])
                     
                 if qr_ans == true_ans:
                     print('The answer is correct')
@@ -154,5 +170,9 @@ def make_test():
 
 #直接実行した時のみに動く
 if __name__ == '__main__':
+
     app.run(port=8000, debug=True)
+
+
+
 
