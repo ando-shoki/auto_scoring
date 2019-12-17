@@ -23,6 +23,7 @@ def make_qr(num=20, hash=False, hashword=None):
 		hs = hashlib.md5(hashword.encode()).hexdigest()
 		hashqr = pyqrcode.create(content = 'hs')
 		hashqr.png(file = 'qr/qr_storage/hash_{}.png'.format(hs), scale = 2, module_color=[0,0,0,0])
+		return 'qr/qr_storage/hash_{}.png'.format(hs)
 
 	qr_list = []
 	for i in range(1,num+1):

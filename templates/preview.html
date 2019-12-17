@@ -17,7 +17,12 @@
 
     </tr>
     {% endfor %}
-    <button type=“button” onclick="location.href='/preview'">試験を作成してWordをダウンロードする</button>
+    <!-- <button type=“button” onclick="location.href='/preview'">試験を作成してWordをダウンロードする</button> -->
+    <!-- <form method="POST" enctype="multipart/form-data"> -->
+      <!-- <input class="file_choose" type="file" name="img_file" id='img_file'> -->
+      <input class="btn" value="試験を作成してWordをダウンロードする" name='word' id='word' type="submit">
+    </form>
+    <!-- <input type=“button” onclick="location.href='/preview'">試験を作成してWordをダウンロードする</button> -->
   </table>
   <a href="./">トップへ</a>
 {% else %}
