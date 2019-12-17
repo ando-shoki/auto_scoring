@@ -121,6 +121,10 @@
   <body>
     <div class="testbox">
       <form method="POST" enctype="multipart/form-data">
+        <div class="item">
+          <label for="qname">試験名<span>*</span></label>
+          <input id="qname" type="text" name="test_name" required/>
+        </div>
         <div class="banner">
           <h1>問題の解答を入力してください</h1>
         </div>
@@ -172,7 +176,7 @@
           QRコードと解答欄が印字された答案用紙が作成されます。
         </label>
         <div class="btn-block">
-          <input class="btn" value="作成" type="submit" >
+          <input class="btn" value="作成" onclick="location.href='/preview'" type="submit">
         </div>
       </form>
     </div>

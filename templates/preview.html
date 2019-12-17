@@ -4,6 +4,7 @@
 <title>auto scoring</title>
 {% if ans_list.any() %}
   <h2>作成する試験</h2>
+  <h3>試験名 : {{test_name}}</h3>
   <table class="table">
     <tr>
       <th>問題番号</th>
@@ -16,6 +17,7 @@
 
     </tr>
     {% endfor %}
+    <button type=“button” onclick="location.href='/preview'">試験を作成してWordをダウンロードする</button>
   </table>
   <a href="./">トップへ</a>
 {% else %}

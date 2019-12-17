@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding: utf-8
 import os
 from flask import Flask, request, redirect, url_for, render_template, flash
 from werkzeug.utils import secure_filename
@@ -159,14 +161,24 @@ def upload_file():
 def make_test():
     ans_list = []
     if request.method == 'POST':
-        for i in request.form:
-            ans_list = np.append(ans_list, request.form.get(i))
+        test_name = request.form['test_name']
+        print('----------------------', test_name)
+        for i in range(1,21):
+            s = 'form[{}]'.format(i)
+            ans_list = np.append(ans_list, request.form[s])
         ans_list = ans_list.astype('i')
         answer = ans_list
-        return render_template('preview.html', ans_list=answer)
+        return render_template('preview.html', ans_list=answer, test_name=test_name)
     elif request.method == 'GET':
 
         return render_template('input_form.html')
+
+@app.route('/preview',methods = ['GET','POST'])
+def download_sheet():
+    if request.method == 'POST':
+        render_template('preview.html', ans_list=answer, test_name=test_name)
+    elif request.method == 'GET':
+        render_template('preview.html', ans_list=answer, test_name=test_name)
 
 #直接実行した時のみに動く
 if __name__ == '__main__':
