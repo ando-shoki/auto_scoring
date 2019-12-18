@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding: utf-8
 import os
 from flask import Flask, request, redirect, url_for, render_template, flash
 from werkzeug.utils import secure_filename
@@ -13,6 +15,8 @@ import pyzbar.pyzbar as pyzbar
 from pyzbar.pyzbar import decode
 from PIL import Image, ImageDraw, ImageFont
 from keras_preprocessing import image
+import urllib.request
+import make_sheet
 
 #model = load_model('auto_scoring/model.h5')#学習済みモデルをロードする
 model = tf.keras.models.load_model('model.h5')#学習済みモデルをロードする
@@ -158,15 +162,36 @@ def upload_file():
 @app.route('/input',methods = ['GET','POST'])
 def make_test():
     ans_list = []
+    test_name = ''
     if request.method == 'POST':
-        for i in request.form:
-            ans_list = np.append(ans_list, request.form.get(i))
+        test_name = request.form['test_name']
+        print('----------------------', test_name)
+        for i in range(1,21):
+            s = 'form[{}]'.format(i)
+            ans_list = np.append(ans_list, request.form[s])
         ans_list = ans_list.astype('i')
         answer = ans_list
-        return render_template('preview.html', ans_list=answer)
+        gl_ans = answer
+        gl_name = test_name
+        return render_template('preview.html', ans_list=answer, test_name=test_name)
     elif request.method == 'GET':
-
+        
         return render_template('input_form.html')
+
+@app.route('/preview',methods = ['GET','POST'])
+def download_sheet():
+    if request.method == 'POST':
+        print('preview post')
+        # test_name = request.form['test_name']
+        return render_template('preview.html', ans_list=gl_ans, test_name=gl_name)
+    elif request.method == 'GET':
+        print('preview get')
+        # test_name = request.form['test_name']
+        make_sheet.make_sheet(qnum=20, test_name=gl_name)
+        flash("成功しました", "success")
+        print(gl_ans)
+        print(gl_name)
+        return render_template('preview.html', ans_list=gl_ans, test_name=gl_name)
 
 #直接実行した時のみに動く
 if __name__ == '__main__':
