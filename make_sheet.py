@@ -37,7 +37,7 @@ def make_sheet(test_name, qnum=20):
     # font = document.add_paragraph().add_run().font
     # font.name = 'Calibri'
     # font.size = Pt(12)
-
+    document.add_paragraph(test_name)
     # 問題識別用のQRコード
     hash_qr_paths = make_read_qr.make_qr(num=qnum, hash=True, hashword=test_name)
     # hash_qr_paths = glob.glob('./qr/qr_storage/hash*')
@@ -54,7 +54,8 @@ def make_sheet(test_name, qnum=20):
     qno = 0
     flag = False
     for i in range(0,9):
-        if qno + 3 >= qnum:
+        # To do 問題数qnumによって列数調整
+        if qno + len(table.columns)-1 >= qnum:
             break
         row_cells = table.add_row().cells
         table.rows.height = 1000
@@ -71,4 +72,6 @@ def make_sheet(test_name, qnum=20):
         if flag:
             break
 
-    document.save('testsheet.docx')
+    document.save('testsheet1218.docx')
+
+make_sheet('12月18日 HAIT Lab概論第二期末試験', 20)

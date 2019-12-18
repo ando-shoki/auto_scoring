@@ -21,7 +21,7 @@ def make_qr(num=20, hash=False, hashword=None):
 	"""
 	if hash==True:
 		hs = hashlib.md5(hashword.encode()).hexdigest()
-		hashqr = pyqrcode.create(content = 'hs')
+		hashqr = pyqrcode.create(content = hs)
 		hashqr.png(file = 'qr/qr_storage/hash_{}.png'.format(hs), scale = 2, module_color=[0,0,0,0])
 		return 'qr/qr_storage/hash_{}.png'.format(hs)
 
@@ -39,3 +39,4 @@ def read_qr(number):
     return data['data']
 
 make_qr(20, hash=True, hashword="python")
+make_qr(20, hash=False)
